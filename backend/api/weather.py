@@ -38,7 +38,7 @@ def _request(cells, start, end):
     try:
         response = requests.get(URL, params=params, timeout=30)
         if response.status_code == 429:
-            raise PlanError("Weather rate limit reached. Wait a minute or use wider spacing.")
+            raise PlanError(f"Weather limit: {response.json().get('reason')}")
         response.raise_for_status()
         data = response.json()
     except requests.RequestException:
