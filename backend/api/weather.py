@@ -4,10 +4,11 @@ import time
 from datetime import timezone
 
 import requests
+import os
 
 from .errors import PlanError
 
-URL = "https://api.open-meteo.com/v1/forecast"
+URL = os.environ.get("OPEN_METEO_URL", "https://api.open-meteo.com/v1/forecast") 
 FIELDS = ["wind_speed_10m", "wind_gusts_10m", "rain", "showers", "snowfall"]
 BATCH = 100
 TTL_SECONDS = 1800
