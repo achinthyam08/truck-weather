@@ -2,6 +2,12 @@
 
 React + Django app that compares truck routes by forecast weather risk, load weight and travel time.
 
+**Live app:** https://truck-weather-three.vercel.app/
+**Walkthrough:** (add Loom link)
+
+Times are shown in the viewer's local time zone.
+The free backend may take a minute to wake up.
+
 ## Run locally (Windows PowerShell)
 
 Backend:
@@ -25,13 +31,13 @@ Tests: `python manage.py test api` (from `backend`).
 ## Architecture
 - `api/tomtom.py`: geocoding and truck routes
 - `api/geo.py`: checkpoints and route de-duplication
-- `api/weather.py`: batched, cached Open-Meteo forecasts
+- `api/weather.py`: defines the forecast data needed and reads what the browser sends back
 - `api/risk.py`, `api/ranking.py`: pure, tested rules
 - `api/planner.py`: combines the above
 - `frontend/src`: form, route cards, map and forecast slider
+The browser downloads forecasts from Open-Meteo because free hosting shares IP addresses and their daily limit. The backend requests the locations it needs, then calculates risk from the data sent back. This trusts client-supplied weather; a production version would use a keyed weather plan and fetch server-side.
 
-One `POST /api/plan` call returns routes, checkpoints and 49 hours of heatmap data,
-so the slider needs no further requests.
+POST /api/plan first asks the browser for forecasts, then returns the plan when called again with them. The slider needs no further requests.
 
 ## Assumptions
 - Empty truck weight is 35,000 lb, added to the load for routing.
