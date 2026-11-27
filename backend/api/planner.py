@@ -1,6 +1,7 @@
 """Combine routing, checkpoints, weather, risk and ranking into one plan."""
 
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from math import ceil
 
 from . import geo, ranking, risk, tomtom, weather
@@ -20,12 +21,19 @@ def _iso(moment):
     return moment.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def plan_trip(origin_text, destination_text, departure, load_lb, interval_miles):
+@lru_cache(maxsize=16)
+def find_routes(origin_text, destination_text, departure, load_lb):
+    """Cached so the follow-up request with weather reuses identical routes."""
     origin = tomtom.geocode(origin_text)
     destination = tomtom.geocode(destination_text)
     routes = tomtom.three_routes(
         (origin["lat"], origin["lon"]), (destination["lat"], destination["lon"]), departure, load_lb
     )
+    return origin, destination, routes
+
+
+def plan_trip(origin_text, destination_text, departure, load_lb, interval_miles, weather_data):
+    origin, destination, routes = find_routes(origin_text, destination_text, departure, load_lb)
 
     longest = timedelta(seconds=max(r["seconds"] for r in routes))
     end = departure + max(longest, timedelta(hours=HEATMAP_HOURS)) + timedelta(hours=1)
@@ -39,7 +47,7 @@ def plan_trip(origin_text, destination_text, departure, load_lb, interval_miles)
             corridor[weather.grid(point)] = point
 
     every_point = [p for route in checkpoints for _, p in route] + list(corridor.values())
-    tables = weather.forecasts(every_point, departure, end)
+    tables = weather.forecasts(every_point, departure, end, weather_data)
 
     results, summaries = [], []
     for index, (route, samples) in enumerate(zip(routes, checkpoints)):

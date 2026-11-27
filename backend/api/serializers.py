@@ -10,6 +10,7 @@ class PlanRequestSerializer(serializers.Serializer):
     departure = serializers.DateTimeField()
     load_lb = serializers.FloatField(min_value=0, max_value=80_000)
     interval_miles = serializers.ChoiceField(choices=[10, 25, 50])
+    weather = serializers.DictField(required=False, default=dict)
 
     def validate_departure(self, value):
         if value < timezone.now() - timedelta(hours=1):

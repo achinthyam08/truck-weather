@@ -3,7 +3,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .errors import PlanError
+from .errors import PlanError, WeatherNeeded
 from .planner import plan_trip
 from .serializers import PlanRequestSerializer
 
@@ -28,7 +28,10 @@ def plan(request):
                 data["departure"],
                 data["load_lb"],
                 int(data["interval_miles"]),
+                data["weather"],
             )
         )
+    except WeatherNeeded as needed:
+        return Response({"weather_request": needed.request})
     except PlanError as exc:
         return Response({"error": str(exc)}, status=422)

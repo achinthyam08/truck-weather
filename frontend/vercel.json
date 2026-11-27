@@ -1,1 +1,0 @@
-{ "rewrites": [ { "source": "/openmeteo/:path*", "destination": "https://api.open-meteo.com/:path*" } ] }

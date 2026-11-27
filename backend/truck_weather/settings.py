@@ -64,6 +64,9 @@ CORS_ALLOWED_ORIGINS = [
 # ------------------------------------------------------------------
 STATIC_URL = "static/"
 
+# Plan requests carry forecast data downloaded by the browser.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ------------------------------------------------------------------
