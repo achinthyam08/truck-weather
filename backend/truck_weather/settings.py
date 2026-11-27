@@ -70,6 +70,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # REST Framework defaults
 # ------------------------------------------------------------------
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "UNAUTHENTICATED_USER": None,
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
